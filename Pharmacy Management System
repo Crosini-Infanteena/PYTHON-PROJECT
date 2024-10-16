@@ -1,0 +1,156 @@
+class Medicine:
+    def __init__(self, name, price, quantity):
+        self.name = name
+        self.price = price
+        self.quantity = quantity
+
+    def __str__(self):
+        return f"{self.name} - ${self.price:.2f} - {self.quantity} units"
+
+class Customer:
+    def __init__(self, name, contact):
+        self.name = name
+        self.contact = contact
+        self.prescriptions = []
+
+    def add_prescription(self, prescription):
+        self.prescriptions.append(prescription)
+
+    def __str__(self):
+        return f"Customer: {self.name}, Contact: {self.contact}, Prescriptions: {len(self.prescriptions)}"
+
+class Prescription:
+    def __init__(self, customer_name, medicine_name, dosage, quantity):
+        self.customer_name = customer_name
+        self.medicine_name = medicine_name
+        self.dosage = dosage
+        self.quantity = quantity
+
+    def __str__(self):
+        return f"Prescription for {self.customer_name}: {self.quantity} units of {self.medicine_name} ({self.dosage})"
+
+class Pharmacy:
+    def __init__(self):
+        self.medicines = []
+        self.customers = []
+        self.sales = []
+
+    def add_medicine(self, name, price, quantity):
+        for med in self.medicines:
+            if med.name == name:
+                med.quantity += quantity
+                return
+        self.medicines.append(Medicine(name, price, quantity))
+
+    def view_medicines(self):
+        for med in self.medicines:
+            print(med)
+
+    def add_customer(self, name, contact):
+        self.customers.append(Customer(name, contact))
+
+    def view_customers(self):
+        for cust in self.customers:
+            print(cust)
+
+    def add_prescription(self, customer_name, medicine_name, dosage, quantity):
+        for cust in self.customers:
+            if cust.name == customer_name:
+                prescription = Prescription(customer_name, medicine_name, dosage, quantity)
+                cust.add_prescription(prescription)
+                return
+        print("Customer not found")
+
+    def view_prescriptions(self):
+        for cust in self.customers:
+            for pres in cust.prescriptions:
+                print(pres)
+
+    def sell_medicine(self, customer_name, medicine_name, quantity):
+        for med in self.medicines:
+            if med.name == medicine_name and med.quantity >= quantity:
+                for cust in self.customers:
+                    if cust.name == customer_name:
+                        med.quantity -= quantity
+                        sale_record = (customer_name, medicine_name, quantity, med.price * quantity)
+                        self.sales.append(sale_record)
+                        return f"Sold {quantity} units of {medicine_name} to {customer_name}"
+        return "Medicine not available or insufficient quantity"
+
+    def view_sales(self):
+        for sale in self.sales:
+            print(f"Sold {sale[2]} units of {sale[1]} to {sale[0]} for ${sale[3]:.2f}")
+
+# Main function to interact with the pharmacy system
+def main():
+    pharmacy = Pharmacy()
+
+    while True:
+        print("\nPharmacy Management System")
+        print("1. Add Medicine")
+        print("2. View Medicines")
+        print("3. Add Customer")
+        print("4. View Customers")
+        print("5. Add Prescription")
+        print("6. View Prescriptions")
+        print("7. Sell Medicine")
+        print("8. View Sales")
+        print("9. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            name = input("Enter medicine name: ")
+            price = float(input("Enter medicine price: "))
+            quantity = int(input("Enter medicine quantity: "))
+            pharmacy.add_medicine(name, price, quantity)
+            print("Medicine added successfully!")
+
+        elif choice == '2':
+            print("Medicines available:")
+            pharmacy.view_medicines()
+
+        elif choice == '3':
+            name = input("Enter customer name: ")
+            contact = input("Enter customer contact: ")
+            pharmacy.add_customer(name, contact)
+            print("Customer added successfully!")
+
+        elif choice == '4':
+            print("Customers:")
+            pharmacy.view_customers()
+
+        elif choice == '5':
+            customer_name = input("Enter customer name: ")
+            medicine_name = input("Enter medicine name: ")
+            dosage = input("Enter dosage: ")
+            quantity = int(input("Enter quantity: "))
+            pharmacy.add_prescription(customer_name, medicine_name, dosage, quantity)
+            print("Prescription added successfully!")
+
+        elif choice == '6':
+            print("Prescriptions:")
+            pharmacy.view_prescriptions()
+
+        elif choice == '7':
+            customer_name = input("Enter customer name: ")
+            medicine_name = input("Enter medicine name: ")
+            quantity = int(input("Enter quantity to sell: "))
+            result = pharmacy.sell_medicine(customer_name, medicine_name, quantity)
+            print(result)
+
+        elif choice == '8':
+            print("Sales records:")
+            pharmacy.view_sales()
+
+        elif choice == '9':
+            print("Exiting...")
+            break
+
+        else:
+            print("Invalid choice! Please try again.")
+
+if __name__ == "__main__":
+    main()
+
+
